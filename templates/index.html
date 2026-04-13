@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 Movie Recommender</h1>
+            <p>Discover your next favorite movie based on genres.</p>
+        </header>
+
+        <section class="search-section">
+            <form action="/recommend" method="POST">
+                <div class="search-bar-container">
+                    <input type="text" name="movie_name" placeholder="Enter a movie you like (e.g., Toy Story)"
+                        value="{{ movie_name if movie_name else '' }}">
+                    <button type="submit">Recommend</button>
+                </div>
+
+                <div class="filters-container">
+                    <div class="filter-group">
+                        <label for="genre">Genre:</label>
+                        <select name="genre" id="genre">
+                            <option value="All">All Genres</option>
+                            {% for g in genres %}
+                            <option value="{{ g }}">{{ g }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="rating">Min Rating:</label>
+                        <input type="number" name="rating" id="rating" min="0" max="5" step="0.5" placeholder="0">
+                    </div>
+                    <div class="filter-group">
+                        <label>Year:</label>
+                        <div class="year-inputs">
+                            <input type="number" name="min_year" placeholder="1900" min="1900" max="2030">
+                            <span>-</span>
+                            <input type="number" name="max_year" placeholder="2030" min="1900" max="2030">
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {% if error %}
+            <p class="error">{{ error }}</p>
+            {% endif %}
+        </section>
+
+        {% if recommendations %}
+        <section class="results-section">
+            <h2>Recommended Movies</h2>
+            <div class="movie-grid">
+                {% for movie in recommendations %}
+                <div class="movie-card">
+                    <div class="movie-header">
+                        <span class="badge year">{{ movie.year }}</span>
+                        <span class="badge rating">★ {{ "%.1f"|format(movie.vote_average) }}</span>
+                    </div>
+                    <div class="movie-info">
+                        <h3>{{ movie.title }}</h3>
+                        <p class="genres">{{ movie.genres }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</body>
+
+</html>
